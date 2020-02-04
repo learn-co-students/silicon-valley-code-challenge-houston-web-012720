@@ -17,9 +17,11 @@ class VentureCapitalist
     # end
 
     def total_worth
+        total = 0 
         funding_rounds.map do |invest|
-         invest.investment
-        end.reduce(:+) 
+         total += invest.investment
+        end
+        total
     end
     
     def offer_contract(startup, type, investment)
@@ -35,10 +37,11 @@ class VentureCapitalist
     end
 
     def biggest_investment
-        amt_array = funding_rounds.map{|fr| fr.investment}
-        amt_array_max = amt_array.max{ |a, b| a<=>b}
-        amt_array_max_index = amt_array.index(amt_array_max)
-        funding_rounds[amt_array_max_index]
+        # amt_array = funding_rounds.map{|fr| fr.investment}
+        # amt_array_max = amt_array.max{ |a, b| a<=>b}
+        # amt_array_max_index = amt_array.index(amt_array_max)
+        # funding_rounds[amt_array_max_index]
+        funding_rounds.max { |a , b | a.investment <=> b.investment }
     end
 
     def invested(domain)
@@ -46,21 +49,26 @@ class VentureCapitalist
         fr_domain.map{|fr| fr.investment}.reduce(:+)
     end
 
+    # def self.tres_commas_club
+    #     vc_hash = {}
+    #     tres_comma = []
+    #     FundingRound.all.each do |fr|
+    #         if vc_hash[fr.venture_capitalist]
+    #             vc_hash[fr.venture_capitalist] += fr.investment
+    #         else
+    #             vc_hash[fr.venture_capitalist] = fr.investment
+    #         end
+    #     end
+    #     vc_hash.each do |k, v|
+    #         if v > 1000000000
+    #             tres_comma << k
+    #         end
+    #     end
+    #     tres_comma
+    # end
     def self.tres_commas_club
-        vc_hash = {}
-        tres_comma = []
-        FundingRound.all.each do |fr|
-            if vc_hash[fr.venture_capitalist]
-                vc_hash[fr.venture_capitalist] += fr.investment
-            else
-                vc_hash[fr.venture_capitalist] = fr.investment
-            end
-        end
-        vc_hash.each do |k, v|
-            if v > 1000000000
-                tres_comma << k
-            end
-        end
-        tres_comma
-    end
-end
+        self.all.select do |cap|
+            cap.total_worth > 1000000000 
+        end 
+    end    
+  end
